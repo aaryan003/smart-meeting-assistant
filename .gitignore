@@ -1,0 +1,41 @@
+# =========================
+# Global ignores
+# =========================
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.log
+
+# =========================
+# Python specific
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.egg-info/
+*.egg
+*.manifest
+*.spec
+
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+
+# =========================
+# Environment & secrets
+# =========================
+.env
+
+# =========================
+# Prisma (backend)
+# =========================
+# Ignore Prisma generated files
+backend/prisma/migrations/*
+
+# BUT keep migration_lock.toml
+!backend/prisma/migrations/migration_lock.toml
+

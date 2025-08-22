@@ -1,1 +1,152 @@
-//empty file
+generator client {
+  provider = "prisma-client-py"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  meetings     Meeting[]
+  actionItems  ActionItem[]
+  
+  @@map("users")
+}
+
+model Meeting {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  scheduledAt DateTime?
+  startedAt   DateTime?
+  endedAt     DateTime?
+  status      MeetingStatus @default(SCHEDULED)
+  meetingUrl  String?
+  recordingUrl String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  organizerId String
+  organizer   User   @relation(fields: [organizerId], references: [id])
+  
+  transcripts   Transcript[]
+  summaries     Summary[]
+  actionItems   ActionItem[]
+  participants  MeetingParticipant[]
+
+  @@map("meetings")
+}
+
+model MeetingParticipant {
+  id        String @id @default(cuid())
+  meetingId String
+  userId    String?
+  name      String
+  email     String?
+  joinedAt  DateTime?
+  leftAt    DateTime?
+  
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  
+  @@unique([meetingId, email])
+  @@map("meeting_participants")
+}
+
+model Transcript {
+  id        String   @id @default(cuid())
+  meetingId String
+  speaker   String?
+  content   String
+  startTime Float    // timestamp in seconds
+  endTime   Float    // timestamp in seconds
+  confidence Float?  // transcription confidence score
+  createdAt DateTime @default(now())
+
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@map("transcripts")
+}
+
+model Summary {
+  id        String      @id @default(cuid())
+  meetingId String
+  type      SummaryType
+  content   String
+  keyPoints String[]    // Array of key discussion points
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@map("summaries")
+}
+
+model ActionItem {
+  id          String           @id @default(cuid())
+  meetingId   String
+  assigneeId  String?
+  title       String
+  description String?
+  priority    ActionPriority   @default(MEDIUM)
+  status      ActionItemStatus @default(PENDING)
+  dueDate     DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  meeting  Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  assignee User?   @relation(fields: [assigneeId], references: [id])
+
+  @@map("action_items")
+}
+
+model EmailDraft {
+  id        String   @id @default(cuid())
+  meetingId String
+  subject   String
+  body      String
+  recipients String[] // Array of email addresses
+  sent      Boolean  @default(false)
+  sentAt    DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("email_drafts")
+}
+
+// Enums
+enum MeetingStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum SummaryType {
+  QUICK
+  DETAILED
+  ACTION_FOCUSED
+}
+
+enum ActionPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ActionItemStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
