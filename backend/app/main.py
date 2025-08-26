@@ -7,7 +7,7 @@ import os
 from dotenv import load_dotenv
 
 from app.utils.database import connect_db, disconnect_db
-from app.routes import meetings, transcription, websocket
+from app.routes import meetings
 from app.config import settings
 
 # Load environment variables
@@ -57,24 +57,23 @@ async def root():
 async def health_check():
     return {"status": "healthy", "service": "smart-meeting-assistant"}
 
-# Include routers
 app.include_router(
     meetings.router,
     prefix="/api/v1/meetings",
     tags=["meetings"]
 )
 
-app.include_router(
-    transcription.router,
-    prefix="/api/v1/transcription",
-    tags=["transcription"]
-)
+# app.include_router(
+#     transcription.router,
+#     prefix="/api/v1/transcription",
+#     tags=["transcription"]
+# )
 
-app.include_router(
-    websocket.router,
-    prefix="/ws",
-    tags=["websocket"]
-)
+# app.include_router(
+#     websocket.router,
+#     prefix="/ws",
+#     tags=["websocket"]
+# )
 
 # Global exception handler
 @app.exception_handler(Exception)

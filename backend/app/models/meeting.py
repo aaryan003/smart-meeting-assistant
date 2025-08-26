@@ -77,8 +77,7 @@ class UserResponse(BaseModel):
     avatar: Optional[str]
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 class MeetingParticipantResponse(BaseModel):
     id: str
@@ -87,8 +86,7 @@ class MeetingParticipantResponse(BaseModel):
     joined_at: Optional[datetime]
     left_at: Optional[datetime]
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 class TranscriptResponse(BaseModel):
     id: str

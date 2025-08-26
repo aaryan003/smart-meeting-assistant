@@ -1,6 +1,6 @@
 from prisma import Prisma
-from app.config import settings
 import asyncio
+import os
 
 # Global database instance
 db = Prisma()
